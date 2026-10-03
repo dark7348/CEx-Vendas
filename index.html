@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Patentes EB do Yso</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<style>
+:root{--bg:#050805;--pn:#0d150e;--pn2:#132018;--ln:#22382a;--gr:#43d16a;--gr2:#1f8f43;--tx:#e6efe3;--mu:#94a891;--rd:#ef5b54;--am:#e8b04a;--r:12px}
+*{box-sizing:border-box;margin:0}
+body{background:radial-gradient(900px 500px at 90% -10%,rgba(67,209,106,.12),transparent 60%),var(--bg);color:var(--tx);font:16px/1.5 Barlow,system-ui,sans-serif;min-height:100vh}
+h1,h2,h3{font-family:'Barlow Condensed',Impact,sans-serif;letter-spacing:.02em}
+header{position:sticky;top:0;z-index:10;display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 20px;background:rgba(5,8,5,.85);backdrop-filter:blur(12px);border-bottom:1px solid var(--ln)}
+header h1{font-size:24px;flex:1;min-width:180px}
+nav{display:flex;gap:8px;flex-wrap:wrap}
+main{max-width:1100px;margin:0 auto;padding:24px 16px 80px}
+button{font:600 15px Barlow,sans-serif;background:linear-gradient(180deg,var(--gr),var(--gr2));color:#03110a;border:0;border-radius:8px;padding:9px 16px;cursor:pointer;transition:transform .15s,filter .15s}
+button:hover:not(:disabled){filter:brightness(1.1);transform:translateY(-1px)}
+button:active:not(:disabled){transform:scale(.97)}
+button:disabled{opacity:.45;cursor:not-allowed}
+button.g{background:transparent;color:var(--tx);border:1px solid var(--ln)}
+button.g:hover:not(:disabled){border-color:var(--gr)}
+button.d{background:linear-gradient(180deg,#f0706a,var(--rd));color:#fff}
+input,select,textarea{width:100%;background:#08100a;color:var(--tx);border:1px solid var(--ln);border-radius:8px;padding:9px 11px;font:inherit}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--gr)}
+input[type=checkbox]{width:auto}
+label{display:block;color:var(--mu);font-size:14px;margin:10px 0 4px}
+.who{color:var(--mu);font-size:14px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:16px}
+.card{background:linear-gradient(180deg,var(--pn2),var(--pn));border:1px solid var(--ln);border-radius:var(--r);padding:16px;display:flex;flex-direction:column;gap:8px;cursor:pointer;transition:transform .2s,border-color .2s,box-shadow .2s;animation:up .4s both}
+.card:hover,.card:focus-visible{transform:translateY(-4px);border-color:var(--gr);box-shadow:0 14px 30px rgba(0,0,0,.5),0 0 24px rgba(67,209,106,.15);outline:none}
+.card img{width:100%;height:140px;object-fit:cover;border-radius:8px;background:#0a110b}
+.card h3{font-size:24px}
+.card p{color:var(--mu);font-size:14px}
+.price{font:700 22px 'Barlow Condensed',sans-serif;color:var(--gr)}
+.badge{display:inline-block;font-size:12px;border:1px solid var(--ln);border-radius:999px;padding:2px 9px;color:var(--mu)}
+.badge.on{border-color:var(--gr);color:var(--gr)}
+.badge.off{border-color:var(--rd);color:var(--rd)}
+.badge.rs{border-color:var(--am);color:var(--am)}
+.panel{background:linear-gradient(180deg,var(--pn2),var(--pn));border:1px solid var(--ln);border-radius:var(--r);padding:18px;margin-bottom:16px}
+.tw{overflow-x:auto;border:1px solid var(--ln);border-radius:var(--r);margin-bottom:16px}
+table{width:100%;border-collapse:collapse}
+th,td{padding:9px 11px;border-bottom:1px solid var(--ln);text-align:left;font-size:14px;vertical-align:top}
+th{color:var(--mu);background:rgba(255,255,255,.02)}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.row>*{flex:0 0 auto}
+.fl{flex:1 1 220px!important}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:20;display:none;align-items:flex-start;justify-content:center;overflow-y:auto;padding:40px 14px}
+.overlay.on{display:flex}
+.modal{background:var(--pn2);border:1px solid var(--ln);border-radius:var(--r);padding:22px;width:100%;max-width:560px;animation:up .3s both}
+.empty{padding:36px;text-align:center;border:1px dashed var(--ln);border-radius:var(--r);color:var(--mu)}
+.msg{padding:12px 14px;border-radius:var(--r);border:1px solid var(--am);color:var(--am);background:rgba(232,176,74,.07);margin-bottom:14px}
+.msg.err{border-color:var(--rd);color:var(--rd);background:rgba(239,91,84,.07)}
+#toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--pn2);border:1px solid var(--gr);border-radius:10px;padding:11px 18px;z-index:30;display:none;max-width:92vw}
+#toast.bad{border-color:var(--rd)}
+.sk{height:220px;border-radius:var(--r);background:linear-gradient(100deg,var(--pn) 30%,var(--pn2) 50%,var(--pn) 70%);background-size:200% 100%;animation:sh 1.3s linear infinite}
+.chk{display:flex;gap:8px;align-items:flex-start;margin-top:12px;color:var(--mu)}
+.chk input{width:auto;margin-top:4px}
+.cart-item{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--ln)}
+@keyframes up{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+@keyframes sh{to{background-position:-200% 0}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+@media (max-width:640px){header h1{font-size:20px}th,td{font-size:13px}}
+</style>
+</head>
+<body>
+<header>
+<h1>Patentes · EB do Yso</h1>
+<nav id="nav"></nav>
+</header>
+<main id="app"></main>
+<div class="overlay" id="ov"><div class="modal" id="md"></div></div>
+<div id="toast"></div>
+<script>
+const CFG={url:'COLE_URL_DO_SUPABASE',key:'COLE_ANON_KEY',pixChave:'COLE_CHAVE_PIX',pixNome:'COLE_NOME_DO_RECEBEDOR'};
+const sb=supabase.createClient(CFG.url,CFG.key);
+const ST={disponivel:'Disponível',indisponivel:'Indisponível',rascunho:'Rascunho'};
+const PSL={pendente:'Pendente',pagamento_em_analise:'Pagamento em análise',pago:'Pago',processando:'Processando',entregue:'Entregue',cancelado:'Cancelado',reembolsado:'Reembolsado'};
+const LBL={patentes:'Patentes',pedidos:'Pedidos',clientes:'Clientes',logs:'Logs'};
+const S={user:null,admin:false,view:'loja',tab:'patentes',products:null,orders:[],cart:[],editing:null,busy:false};
+const $=id=>document.getElementById(id);
+const brl=v=>Number(v||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
+const dt=s=>new Date(s).toLocaleString('pt-BR');
+function h(tag,props,...kids){
+const e=document.createElement(tag);
+if(props)for(const k in props){
+const v=props[k];
+if(v===null||v===undefined||v===false)continue;
+if(k==='on')for(const ev in v)e.addEventListener(ev,v[ev]);
+else if(k==='cls')e.className=v;
+else if(k==='value'||k==='checked'||k==='disabled')e[k]=v;
+else e.setAttribute(k,v===true?'':v);
+}
+kids.flat().forEach(c=>{if(c===null||c===undefined||c===false)return;e.append(c instanceof Node?c:String(c))});
+return e;
+}
+function sel(id,opts,val){const s=h('select',{id},opts.map(([v,t])=>h('option',{value:v},t)));s.value=val;return s}
+const safeImg=u=>{try{return new URL(u).protocol==='https:'?u:''}catch(e){return ''}};
+const toast=(m,bad)=>{const t=$('toast');t.textContent=m;t.className=bad?'bad':'';t.style.display='block';clearTimeout(toast.t);toast.t=setTimeout(()=>t.style.display='none',3500)};
+const badge=p=>h('span',{cls:'badge '+(p.disponibilidade==='disponivel'?'on':p.disponibilidade==='rascunho'?'rs':'off')},ST[p.disponibilidade]);
+const lines=(t,title)=>t?h('div',{},h('label',{},title),...t.split('\n').filter(x=>x.trim()).map(x=>h('p',{cls:'who'},x))):null;
+const closeOv=()=>$('ov').classList.remove('on');
+
+async function loadSession(){
+const {data}=await sb.auth.getSession();
+S.user=data.session?data.session.user:null;
+S.admin=false;
+if(S.user){const {data:a}=await sb.from('admins').select('user_id').eq('user_id',S.user.id).maybeSingle();S.admin=!!a}
+}
+async function loadProducts(){
+const {data,error}=await sb.from('patentes').select('*').order('ordem').order('preco');
+if(error){toast('Não foi possível carregar as patentes.',1);S.products=S.products||[];return}
+S.products=data;
+}
+async function loadOrders(){
+if(!S.user){S.orders=[];return}
+const {data,error}=await sb.from('pedidos').select('*,pedido_itens(nome_snapshot,preco_unitario)').order('criado_em',{ascending:false});
+if(error){toast('Não foi possível carregar seus pedidos.',1);return}
+S.orders=data;
+}
+function loadCart(){try{S.cart=JSON.parse(localStorage.getItem('pat_cart')||'[]').filter(x=>typeof x==='string')}catch(e){S.cart=[]}}
+function saveCart(){localStorage.setItem('pat_cart',JSON.stringify(S.cart))}
+function cartItems(){return S.cart.map(id=>(S.products||[]).find(p=>p.id===id)).filter(p=>p&&p.disponibilidade==='disponivel')}
+function addCart(id){
+const p=(S.products||[]).find(x=>x.id===id);
+if(!p||p.disponibilidade!=='disponivel')return toast('Esta patente não está disponível.',1);
+if(S.cart.includes(id))return toast('Esta patente já está no carrinho.');
+S.cart.push(id);saveCart();toast('Adicionado ao carrinho.');render();
+}
+function removeCart(id){S.cart=S.cart.filter(x=>x!==id);saveCart();render()}
+
+async function login(){await sb.auth.signInWithOAuth({provider:'discord',options:{scopes:'identify',redirectTo:location.origin+location.pathname}})}
+async function logout(){await sb.auth.signOut();location.reload()}
+async function go(v){
+S.view=v;
+if(v==='pedidos')await loadOrders();
+render();scrollTo(0,0);
+}
+
+function render(){
+renderNav();
+const m=$('app');m.replaceChildren();
+const views={loja:viewLoja,carrinho:viewCarrinho,checkout:viewCheckout,pedidos:viewPedidos,admin:viewAdmin};
+(views[S.view]||viewLoja)(m);
+}
+function renderNav(){
+$('nav').replaceChildren(
+h('button',{cls:'g',on:{click:()=>go('loja')}},'Loja'),
+S.user?h('button',{cls:'g',on:{click:()=>go('pedidos')}},'Meus pedidos'):null,
+S.admin?h('button',{cls:'g',on:{click:()=>go('admin')}},'Administração'):null,
+h('button',{cls:'g',on:{click:()=>go('carrinho')}},'Carrinho ('+S.cart.length+')'),
+S.user?h('button',{cls:'g',on:{click:logout}},'Sair'):h('button',{on:{click:login}},'Entrar com Discord'));
+}
+
+function viewLoja(m){
+m.append(h('div',{cls:'panel'},h('h2',{},'Patentes disponíveis'),h('p',{cls:'who'},'Escolha uma patente, adicione ao carrinho e pague via PIX.')));
+if(S.products===null){m.append(h('div',{cls:'grid'},[1,2,3,4].map(()=>h('div',{cls:'sk'}))));return}
+if(!S.products.length){m.append(h('div',{cls:'empty'},'Nenhuma patente cadastrada ainda.'));return}
+m.append(h('div',{cls:'grid'},S.products.map(card)));
+}
+function card(p){
+const img=safeImg(p.imagem);
+const open=()=>openProd(p.id);
+return h('div',{cls:'card',tabindex:'0',role:'button',on:{click:open,keydown:e=>{if(e.key==='Enter')open()}}},
+img?h('img',{src:img,alt:'',loading:'lazy'}):null,
+h('h3',{},p.nome),h('div',{cls:'price'},brl(p.preco)),badge(p),
+h('p',{},(p.descricao||'').slice(0,110)));
+}
+function openProd(id){
+const p=S.products.find(x=>x.id===id);if(!p)return;
+const off=p.disponibilidade!=='disponivel';
+$('md').replaceChildren(
+h('h2',{},p.nome),h('div',{cls:'price'},brl(p.preco)),badge(p),
+lines(p.descricao,'Descrição'),lines(p.beneficios,'Benefícios'),lines(p.requisitos,'Requisitos'),
+lines(off?'Indisponível no momento':'Disponível para compra','Disponibilidade'),
+h('div',{cls:'row',style:'margin-top:18px'},
+h('button',{disabled:off,on:{click:()=>{addCart(id);closeOv()}}},off?'Indisponível':'Adicionar ao carrinho'),
+h('button',{cls:'g',on:{click:closeOv}},'Fechar')));
+$('ov').classList.add('on');
+}
+
+function viewCarrinho(m){
+const items=cartItems();
+if(items.length!==S.cart.length){S.cart=items.map(p=>p.id);saveCart()}
+if(!items.length){m.append(h('div',{cls:'empty'},'Seu carrinho está vazio.',h('div',{style:'margin-top:12px'},h('button',{on:{click:()=>go('loja')}},'Ver patentes'))));return}
+const sub=items.reduce((s,p)=>s+Number(p.preco),0);
+const desc=0;
+m.append(
+h('div',{cls:'panel'},items.map(p=>h('div',{cls:'cart-item'},
+h('div',{},h('strong',{},p.nome),h('div',{cls:'price'},brl(p.preco))),
+h('button',{cls:'d',on:{click:()=>removeCart(p.id)}},'Remover')))),
+h('div',{cls:'panel'},
+h('p',{},'Subtotal: '+brl(sub)),
+h('p',{},'Descontos: '+brl(desc)),
+h('h3',{},'Total: '+brl(sub-desc)),
+h('div',{cls:'row',style:'margin-top:12px'},
+h('button',{cls:'g',on:{click:()=>go('loja')}},'Continuar comprando'),
+h('button',{on:{click:()=>{if(!S.user){toast('Entre com Discord para finalizar.',1);return login()}go('checkout')}}},'Finalizar compra'))));
+}
+
+function viewCheckout(m){
+const items=cartItems();
+if(!items.length){go('carrinho');return}
+const total=items.reduce((s,p)=>s+Number(p.preco),0);
+m.append(h('div',{cls:'panel'},
+h('h2',{},'Finalizar compra'),
+h('label',{for:'ru'},'Username do Roblox'),
+h('input',{id:'ru',maxlength:'20',autocomplete:'off',placeholder:'Seu_Nick'}),
+h('label',{},'Patentes'),
+items.map(p=>h('p',{},p.nome+' — '+brl(p.preco))),
+h('p',{style:'margin-top:10px'},h('strong',{},'Total: '+brl(total))),
+h('label',{cls:'chk'},h('input',{type:'checkbox',id:'tc'}),'Entendo que a patente é entregue no Roblox somente após a confirmação do pagamento.'),
+h('div',{cls:'row',style:'margin-top:16px'},
+h('button',{id:'btn',on:{click:submitOrder}},'Gerar pedido e pagar via PIX'),
+h('button',{cls:'g',on:{click:()=>go('carrinho')}},'Voltar'))));
+}
+async function submitOrder(){
+if(S.busy)return;
+const u=$('ru').value.trim();
+if(!/^[A-Za-z0-9_]{3,20}$/.test(u))return toast('Username inválido. Use de 3 a 20 letras, números ou _.',1);
+if(!$('tc').checked)return toast('Aceite a condição para continuar.',1);
+S.busy=true;$('btn').disabled=true;
+const {error}=await sb.rpc('create_order',{p_username:u,p_items:S.cart});
+S.busy=false;
+if(error){$('btn').disabled=false;return toast(error.message,1)}
+S.cart=[];saveCart();
+toast('Pedido criado. Faça o pagamento via PIX.');
+await go('pedidos');
+}
+
+function viewPedidos(m){
+if(!S.user){m.append(h('div',{cls:'msg'},'Entre com Discord para ver seus pedidos.'));return}
+if(!S.orders.length){m.append(h('div',{cls:'empty'},'Você ainda não tem pedidos.'));return}
+m.append(...S.orders.map(orderCard));
+}
+function orderCard(o){
+return h('div',{cls:'panel'},
+h('div',{cls:'row'},h('strong',{},'Pedido #'+o.id.slice(0,8)),h('span',{cls:'badge'},PSL[o.status]||o.status)),
+h('p',{cls:'who'},dt(o.criado_em)+' · Roblox: '+o.roblox_username),
+h('p',{},(o.pedido_itens||[]).map(i=>i.nome_snapshot+' ('+brl(i.preco_unitario)+')').join(', ')),
+h('p',{},h('strong',{},'Total: '+brl(o.total))),
+o.status==='pendente'?h('div',{cls:'msg'},'Pague via PIX na chave '+CFG.pixChave+' ('+CFG.pixNome+') no valor de '+brl(o.total)+'. Depois do pagamento, o ADM confirma o pedido.'):null);
+}
+
+async function viewAdmin(m){
+if(!S.admin){m.append(h('div',{cls:'msg err'},'Acesso restrito.'));return}
+m.append(h('div',{cls:'tabs'},Object.keys(LBL).map(t=>h('button',{cls:t===S.tab?'':'g',on:{click:()=>{S.tab=t;S.editing=null;render()}}},LBL[t]))));
+const box=h('div');m.append(box);
+({patentes:admPatentes,pedidos:admPedidos,clientes:admClientes,logs:admLogs})[S.tab](box);
+}
+
+function admPatentes(box){
+const v=S.editing?(S.products.find(x=>x.id===S.editing)||{}):{};
+box.append(h('div',{cls:'panel'},
+h('h2',{},S.editing?'Editar patente':'Nova patente'),
+h('div',{cls:'row'},
+h('div',{cls:'fl'},h('label',{for:'pn'},'Nome'),h('input',{id:'pn',maxlength:'80',value:v.nome||''})),
+h('div',{cls:'fl'},h('label',{for:'pp'},'Preço (R$)'),h('input',{id:'pp',type:'number',step:'0.01',min:'0',value:v.preco??''})),
+h('div',{cls:'fl'},h('label',{for:'pd'},'Disponibilidade'),sel('pd',[['disponivel','Disponível'],['indisponivel','Indisponível'],['rascunho','Rascunho']],v.disponibilidade||'disponivel')),
+h('div',{cls:'fl'},h('label',{for:'po'},'Ordem'),h('input',{id:'po',type:'number',value:v.ordem??0}))),
+h('label',{for:'pi'},'Imagem (link https, opcional)'),h('input',{id:'pi',value:v.imagem||''}),
+h('label',{for:'pdsc'},'Descrição'),h('textarea',{id:'pdsc',rows:'3'},v.descricao||''),
+h('label',{for:'pb'},'Benefícios (um por linha)'),h('textarea',{id:'pb',rows:'3'},v.beneficios||''),
+h('label',{for:'pr'},'Requisitos (um por linha)'),h('textarea',{id:'pr',rows:'3'},v.requisitos||''),
+h('label',{for:'prr'},'ID do cargo no grupo Roblox (opcional)'),h('input',{id:'prr',type:'number',value:v.roblox_role_id??''}),
+h('div',{cls:'row',style:'margin-top:14px'},
+h('button',{on:{click:savePatente}},S.editing?'Salvar alterações':'Criar patente'),
+S.editing?h('button',{cls:'g',on:{click:()=>{S.editing=null;render()}}},'Cancelar edição'):null)));
+const quick=x=>{const s=sel('q'+x.id,[['disponivel','Disponível'],['indisponivel','Indisponível'],['rascunho','Rascunho']],x.disponibilidade);s.addEventListener('change',()=>setDisp(x.id,s.value));return s};
+box.append(h('div',{cls:'tw'},h('table',{},
+h('thead',{},h('tr',{},['Nome','Preço','Status','Ordem','Ações'].map(t=>h('th',{},t)))),
+h('tbody',{},S.products.map(x=>h('tr',{},
+h('td',{},x.nome),h('td',{},brl(x.preco)),h('td',{},quick(x)),h('td',{},String(x.ordem)),
+h('td',{},h('div',{cls:'row'},
+h('button',{cls:'g',on:{click:()=>{S.editing=x.id;render();scrollTo(0,0)}}},'Editar'),
+h('button',{cls:'d',on:{click:()=>delPatente(x.id,x.nome)}},'Excluir')))))))));
+if(!S.products.length)box.append(h('div',{cls:'empty'},'Nenhuma patente ainda. Crie a primeira acima.'));
+}
+async function savePatente(){
+const nome=$('pn').value.trim(),preco=Number($('pp').value),disp=$('pd').value;
+const ordem=parseInt($('po').value||'0',10),img=$('pi').value.trim(),rr=$('prr').value.trim();
+if(nome.length<2||nome.length>80)return toast('Nome deve ter de 2 a 80 caracteres.',1);
+if($('pp').value===''||!Number.isFinite(preco)||preco<0)return toast('Preço inválido.',1);
+if(img&&!safeImg(img))return toast('Imagem deve ser um link https válido.',1);
+if(rr&&!Number.isInteger(Number(rr)))return toast('ID do cargo deve ser um número.',1);
+const payload={nome,preco,disponibilidade:disp,ordem:Number.isFinite(ordem)?ordem:0,imagem:img,descricao:$('pdsc').value.trim(),beneficios:$('pb').value.trim(),requisitos:$('pr').value.trim(),roblox_role_id:rr?Number(rr):null};
+if(S.busy)return;S.busy=true;
+const q=S.editing?sb.from('patentes').update(payload).eq('id',S.editing):sb.from('patentes').insert(payload);
+const {error}=await q;
+S.busy=false;
+if(error)return toast(error.message,1);
+S.editing=null;toast('Patente salva.');
+await loadProducts();render();
+}
+async function setDisp(id,valor){
+const {error}=await sb.from('patentes').update({disponibilidade:valor}).eq('id',id);
+if(error)return toast(error.message,1);
+toast('Status atualizado.');await loadProducts();render();
+}
+async function delPatente(id,nome){
+if(!confirm('Excluir a patente "'+nome+'"? Esta ação não pode ser desfeita.'))return;
+const {error}=await sb.from('patentes').delete().eq('id',id);
+if(error)return toast(error.code==='23503'?'Não dá para excluir: ela já aparece em pedidos. Deixe como indisponível.':error.message,1);
+S.cart=S.cart.filter(x=>x!==id);saveCart();
+toast('Patente excluída.');await loadProducts();render();
+}
+
+async function admPedidos(box){
+box.append(h('p',{cls:'who'},'Carregando pedidos…'));
+const {data,error}=await sb.from('pedidos').select('*,pedido_itens(nome_snapshot)').order('criado_em',{ascending:false}).limit(300);
+box.replaceChildren();
+if(error)return box.append(h('div',{cls:'msg err'},error.message));
+const pagos=['pago','processando','entregue'];
+const faturamento=data.filter(o=>pagos.includes(o.status)).reduce((t,o)=>t+Number(o.total),0);
+box.append(h('div',{cls:'panel row'},
+h('span',{},'Pedidos: '+data.length),
+h('span',{},'Pendentes: '+data.filter(o=>o.status==='pendente').length),
+h('span',{},'Faturamento: '+brl(faturamento))));
+if(!data.length)return box.append(h('div',{cls:'empty'},'Nenhum pedido ainda.'));
+box.append(h('div',{cls:'tw'},h('table',{},
+h('thead',{},h('tr',{},['Data','Roblox','Patentes','Total','Status','ID do PIX','Ações'].map(t=>h('th',{},t)))),
+h('tbody',{},data.map(o=>h('tr',{},
+h('td',{},dt(o.criado_em)),h('td',{},o.roblox_username),
+h('td',{},(o.pedido_itens||[]).map(i=>i.nome_snapshot).join(', ')),
+h('td',{},brl(o.total)),
+h('td',{},sel('st'+o.id,Object.entries(PSL),o.status)),
+h('td',{},h('input',{id:'tx'+o.id,value:o.identificador_transacao||'',placeholder:'ID do PIX'})),
+h('td',{},h('div',{cls:'row'},
+h('button',{on:{click:()=>saveOrder(o.id)}},'Salvar'),
+h('button',{cls:'d',on:{click:()=>delOrder(o.id)}},'Excluir')))))))));
+}
+async function saveOrder(id){
+const status=$('st'+id).value,identificador_transacao=$('tx'+id).value.trim()||null;
+const {error}=await sb.from('pedidos').update({status,identificador_transacao}).eq('id',id);
+if(error)return toast(error.message,1);
+toast('Pedido atualizado.');render();
+}
+async function delOrder(id){
+if(!confirm('Excluir este pedido? Ele sairá do histórico.'))return;
+const {error}=await sb.from('pedidos').delete().eq('id',id);
+if(error)return toast(error.message,1);
+toast('Pedido excluído.');render();
+}
+
+async function admClientes(box){
+const {data,error}=await sb.from('pedidos').select('user_id,roblox_username,total,status,criado_em').order('criado_em',{ascending:false}).limit(1000);
+box.replaceChildren();
+if(error)return box.append(h('div',{cls:'msg err'},error.message));
+const mapa=new Map();
+data.forEach(o=>{
+const c=mapa.get(o.user_id)||{nome:o.roblox_username,pedidos:0,pago:0,ultimo:o.criado_em};
+c.pedidos++;
+if(['pago','processando','entregue'].includes(o.status))c.pago+=Number(o.total);
+mapa.set(o.user_id,c);
+});
+if(!mapa.size)return box.append(h('div',{cls:'empty'},'Nenhum cliente ainda.'));
+box.append(h('div',{cls:'tw'},h('table',{},
+h('thead',{},h('tr',{},['Roblox','Pedidos','Total pago','Último pedido'].map(t=>h('th',{},t)))),
+h('tbody',{},[...mapa.values()].map(c=>h('tr',{},h('td',{},c.nome),h('td',{},String(c.pedidos)),h('td',{},brl(c.pago)),h('td',{},dt(c.ultimo))))))));
+}
+
+async function admLogs(box){
+const {data,error}=await sb.from('logs').select('*').order('criado_em',{ascending:false}).limit(200);
+box.replaceChildren();
+if(error)return box.append(h('div',{cls:'msg err'},error.message));
+if(!data.length)return box.append(h('div',{cls:'empty'},'Nenhum registro.'));
+box.append(h('div',{cls:'tw'},h('table',{},
+h('thead',{},h('tr',{},['Data','Ação','Detalhe'].map(t=>h('th',{},t)))),
+h('tbody',{},data.map(l=>h('tr',{},h('td',{},dt(l.criado_em)),h('td',{},l.acao),h('td',{},JSON.stringify(l.detalhe))))))));
+}
+
+async function init(){
+loadCart();
+$('ov').addEventListener('click',e=>{if(e.target.id==='ov')closeOv()});
+render();
+await loadSession();
+await loadProducts();
+render();
+sb.auth.onAuthStateChange(async ev=>{
+if(ev==='SIGNED_IN'||ev==='SIGNED_OUT'){await loadSession();await loadProducts();render()}
+});
+}
+init();
+</script>
+</body>
+</html>
