@@ -77,7 +77,7 @@ th{color:var(--mu);background:rgba(255,255,255,.02)}
 <div id="toast"></div>
 <script>
 const CFG={url:'COLE_URL_DO_SUPABASE',key:'COLE_ANON_KEY',pixChave:'COLE_CHAVE_PIX',pixNome:'COLE_NOME_DO_RECEBEDOR'};
-const sb=supabase.createClient(CFG.url,CFG.key);
+let sb=null;
 const ST={disponivel:'Disponível',indisponivel:'Indisponível',rascunho:'Rascunho'};
 const PSL={pendente:'Pendente',pagamento_em_analise:'Pagamento em análise',pago:'Pago',processando:'Processando',entregue:'Entregue',cancelado:'Cancelado',reembolsado:'Reembolsado'};
 const LBL={patentes:'Patentes',pedidos:'Pedidos',clientes:'Clientes',logs:'Logs'};
@@ -104,6 +104,7 @@ const toast=(m,bad)=>{const t=$('toast');t.textContent=m;t.className=bad?'bad':'
 const badge=p=>h('span',{cls:'badge '+(p.disponibilidade==='disponivel'?'on':p.disponibilidade==='rascunho'?'rs':'off')},ST[p.disponibilidade]);
 const lines=(t,title)=>t?h('div',{},h('label',{},title),...t.split('\n').filter(x=>x.trim()).map(x=>h('p',{cls:'who'},x))):null;
 const closeOv=()=>$('ov').classList.remove('on');
+const erroTela=t=>{$('app').replaceChildren(h('div',{cls:'msg err'},t))};
 
 async function loadSession(){
 const {data}=await sb.auth.getSession();
@@ -113,7 +114,7 @@ if(S.user){const {data:a}=await sb.from('admins').select('user_id').eq('user_id'
 }
 async function loadProducts(){
 const {data,error}=await sb.from('patentes').select('*').order('ordem').order('preco');
-if(error){toast('Não foi possível carregar as patentes.',1);S.products=S.products||[];return}
+if(error){toast('Não foi possível carregar as patentes: '+error.message,1);S.products=S.products||[];return}
 S.products=data;
 }
 async function loadOrders(){
@@ -123,7 +124,7 @@ if(error){toast('Não foi possível carregar seus pedidos.',1);return}
 S.orders=data;
 }
 function loadCart(){try{S.cart=JSON.parse(localStorage.getItem('pat_cart')||'[]').filter(x=>typeof x==='string')}catch(e){S.cart=[]}}
-function saveCart(){localStorage.setItem('pat_cart',JSON.stringify(S.cart))}
+function saveCart(){try{localStorage.setItem('pat_cart',JSON.stringify(S.cart))}catch(e){}}
 function cartItems(){return S.cart.map(id=>(S.products||[]).find(p=>p.id===id)).filter(p=>p&&p.disponibilidade==='disponivel')}
 function addCart(id){
 const p=(S.products||[]).find(x=>x.id===id);
@@ -374,15 +375,20 @@ h('tbody',{},data.map(l=>h('tr',{},h('td',{},dt(l.criado_em)),h('td',{},l.acao),
 }
 
 async function init(){
+if(Object.values(CFG).some(v=>String(v).startsWith('COLE_'))){erroTela('Configuração pendente: abra o index.html e preencha URL, chave anon, chave PIX e nome do recebedor no bloco CFG.');return}
+if(!window.supabase){erroTela('O Supabase não carregou. Verifique a conexão com a internet e tente de novo.');return}
+try{sb=window.supabase.createClient(CFG.url,CFG.key)}catch(e){erroTela('URL ou chave do Supabase inválida: '+e.message);return}
 loadCart();
 $('ov').addEventListener('click',e=>{if(e.target.id==='ov')closeOv()});
 render();
+try{
 await loadSession();
 await loadProducts();
 render();
 sb.auth.onAuthStateChange(async ev=>{
 if(ev==='SIGNED_IN'||ev==='SIGNED_OUT'){await loadSession();await loadProducts();render()}
 });
+}catch(e){erroTela('Erro ao carregar o site: '+e.message)}
 }
 init();
 </script>
